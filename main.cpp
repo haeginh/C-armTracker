@@ -291,7 +291,7 @@ int main(int argc, char* argv[])
         secondary_config = get_subordinate_config(); // not used - currently standalone mode
         // Construct all the things that we'll need whether or not we are running with 1 or 2 cameras
         k4a::calibration main_calibration = capturer.get_master_device().get_calibration(main_config.depth_mode,main_config.color_resolution);
-        // Set up a transformation. DO THIS OUTSIDE OF YOUR MAIN LOOP! Constructing transformations involves time-intensive
+        // Set up a transformation. DO THIS OUTSIDE OF YOUR MAIN LgiOOP! Constructing transformations involves time-intensive
         // hardware setup and should not change once you have a rigid setup, so only call it once or it will run very
         // slowly.
         main_depth_to_main_color = k4a::transformation(main_calibration);
@@ -374,10 +374,12 @@ int main(int argc, char* argv[])
         std::vector<cv::linemod::Match> matches;
         std::vector<cv::String> class_ids;
         std::vector<cv::Mat> quantized_images;
-       // cv::imshow("normals", depth);
+        cv::imshow("normals", depth);
         match_timer.start();
         detector->match(sources, (float)matching_threshold, matches, class_ids, quantized_images);
         match_timer.stop();
+        cv::imshow("color", display);
+        //cv::imshow("normals", quantized_images[1]);
 
         int classes_visited = 0;
         std::set<std::string> visited;
@@ -421,8 +423,6 @@ int main(int argc, char* argv[])
             if (show_match_result || show_timings)
                 printf("------------------------------------------------------------\n");
         }
-        cv::imshow("color", display);
-        cv::imshow("normals", quantized_images[1]);
 
         color.release(); depth.release();display.release();
 
