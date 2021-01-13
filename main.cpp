@@ -300,7 +300,7 @@ int main(int argc, char* argv[])
 
     // Main loop
     //k4a::playback playback; playback.get_next_capture();
-    cv::Mat color, depth;
+    cv::Mat color, depth, display;
     bool recording(false), capt(false);
     int recordID(0);
     cv::FileStorage fs_d, fs_c;
@@ -344,7 +344,6 @@ int main(int argc, char* argv[])
             main_depth_to_main_color.depth_image_to_color_camera(main_depth_image, &main_depth_in_main_color);
             depth = depth_to_opencv(main_depth_in_main_color);
             color = color_to_opencv(main_color_image);
-            //cv::imshow("masked", depth);
             /*color2depth - dose not work for linemod*/
             //k4a_image_t transformed = color_to_depth(transformation,main_depth_image.handle(),main_color_image.handle());
             //depth = depth_to_opencv(main_depth_image);
@@ -363,10 +362,11 @@ int main(int argc, char* argv[])
             }
         }
 
-        cv::Mat display = color.clone();
+        display = color.clone();
+        //cv::imshow("normals", depth);
 
         std::vector<cv::Mat> sources;
-        //depth = (depth-label.GetMinDist())*label.GetDepthFactor();
+        depth = (depth-label.GetMinDist())*label.GetDepthFactor();
         sources.push_back(color);
         sources.push_back(depth);
 
@@ -374,6 +374,7 @@ int main(int argc, char* argv[])
         std::vector<cv::linemod::Match> matches;
         std::vector<cv::String> class_ids;
         std::vector<cv::Mat> quantized_images;
+       // cv::imshow("normals", depth);
         match_timer.start();
         detector->match(sources, (float)matching_threshold, matches, class_ids, quantized_images);
         match_timer.stop();
@@ -422,6 +423,8 @@ int main(int argc, char* argv[])
         }
         cv::imshow("color", display);
         cv::imshow("normals", quantized_images[1]);
+
+        color.release(); depth.release();display.release();
 
         char key = (char)cv::waitKey(10);
         if (key == 'q')

@@ -34,7 +34,7 @@ static k4a_device_configuration_t get_default_config()
     k4a_device_configuration_t camera_config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
     camera_config.color_format = K4A_IMAGE_FORMAT_COLOR_BGRA32;
     camera_config.color_resolution = K4A_COLOR_RESOLUTION_720P;
-    //    camera_config.depth_mode = K4A_DEPTH_MODE_WFOV_UNBINNED; // No need for depth during calibration
+        //camera_config.depth_mode = K4A_DEPTH_MODE_WFOV_UNBINNED; // No need for depth during calibration
     camera_config.depth_mode = K4A_DEPTH_MODE_NFOV_UNBINNED; // No need for depth during calibration
     camera_config.camera_fps = K4A_FRAMES_PER_SECOND_15;     // Don't use all USB bandwidth
     camera_config.subordinate_delay_off_master_usec = 0;     // Must be zero for master
@@ -84,7 +84,7 @@ static cv::Mat depth_to_opencv(const k4a::image& im)
         im.get_width_pixels(),
         CV_16U,
         (void*)im.get_buffer(),
-        static_cast<size_t>(im.get_stride_bytes()));
+        cv::Mat::AUTO_STEP);//static_cast<size_t>(im.get_stride_bytes()));
 }
 
 static k4a_image_t color_to_depth(k4a_transformation_t transformation_handle,
